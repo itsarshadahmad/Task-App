@@ -2,6 +2,68 @@
 
 A modern, feature-rich task management application built with Flutter, designed for productivity, collaboration, and seamless cross-platform experience.
 
+## 🚀 Quick Start
+
+The app now supports **3 backend modes** - choose what works best for you!
+
+### Option 1: Mock Mode (Easiest - No Setup Required)
+```bash
+# Clone the repository
+git clone https://github.com/itsarshadahmad/Task-App.git
+cd Task-App
+
+# Get dependencies
+flutter pub get
+
+# Run the app
+flutter run
+```
+✅ Works immediately with pre-loaded sample data
+✅ All UI/UX features working
+✅ Perfect for testing without any configuration
+
+### Option 2: Firebase Mode
+For real-time cloud sync with Firebase:
+
+1. Uncomment Firebase packages in `pubspec.yaml`:
+```yaml
+dependencies:
+  firebase_core: ^2.24.2
+  firebase_auth: ^4.16.0
+  cloud_firestore: ^4.14.0
+  firebase_storage: ^11.6.0
+```
+
+2. Configure Firebase in `main.dart`:
+```dart
+await Firebase.initializeApp(
+  options: DefaultFirebaseOptions.currentPlatform,
+);
+```
+
+3. Set up Firebase project and update `firebase_options.dart`
+
+### Option 3: Supabase Mode
+For open-source cloud sync with Supabase:
+
+1. Add Supabase package to `pubspec.yaml`:
+```yaml
+dependencies:
+  supabase_flutter: ^2.0.0
+```
+
+2. Configure Supabase in `main.dart`:
+```dart
+await SupabaseService.initialize(
+  url: 'YOUR_SUPABASE_URL',
+  anonKey: 'YOUR_SUPABASE_ANON_KEY',
+);
+```
+
+3. Create a Supabase project at https://supabase.com/
+
+---
+
 ## Features
 
 ### Core Functionality
@@ -18,8 +80,8 @@ A modern, feature-rich task management application built with Flutter, designed 
 - **Calendar View**: View tasks by date with full calendar integration
 
 ### Advanced Features
-- **Real-time Collaboration**: Work with team members in real-time
-- **Cloud Synchronization**: Sync data across all devices with Firebase
+- **Real-time Collaboration**: Work with team members in real-time (Firebase/Supabase)
+- **Cloud Synchronization**: Sync data across all devices
 - **Offline Support**: Full offline functionality with automatic sync when online
 - **End-to-End Encryption**: Secure your data with AES-256 encryption
 - **Voice-to-Text**: Create tasks using voice commands
@@ -35,72 +97,25 @@ A modern, feature-rich task management application built with Flutter, designed 
 - **Customizable**: Personalize colors, themes, and layouts
 
 ### Platform Support
-- Android
-- iOS
-- Web
-- Windows
-- macOS
-- Linux
+- ✅ Android
+- ✅ iOS
+- ✅ Web
+- ✅ Windows
+- ✅ macOS
+- ✅ Linux
 
-## Architecture
+---
 
-### State Management
-- Riverpod for reactive state management
-- Provider pattern for dependency injection
-
-### Data Layer
-- **Firebase**: Cloud Firestore for real-time data
-- **Hive**: Local storage for offline-first architecture
-- **Sync Service**: Automatic synchronization between local and cloud
-
-### Services
-- **Authentication**: Firebase Auth with email, Google, Apple, Facebook
-- **Notifications**: Local notifications for reminders
-- **Voice Recognition**: Speech-to-text for task creation
-- **Analytics**: Track productivity and usage patterns
-- **Encryption**: AES-256 encryption for sensitive data
-- **Haptic Feedback**: Device vibration for user feedback
-
-## Getting Started
-
-### Prerequisites
-- Flutter SDK 3.0.0 or higher
-- Dart 3.0.0 or higher
-- Android Studio / Xcode for mobile development
-
-### Installation
-
-1. Clone the repository:
-```bash
-git clone https://github.com/your-repo/task-app.git
-cd task-app
-```
-
-2. Install dependencies:
-```bash
-flutter pub get
-```
-
-3. Set up Firebase:
-   - Create a Firebase project
-   - Add your Firebase configuration to `lib/firebase_options.dart`
-   - Enable Firestore, Authentication, and Storage
-
-4. Run the app:
-```bash
-flutter run
-```
-
-## Project Structure
+## 📁 Project Structure
 
 ```
 lib/
-├── app.dart                    # Main app widget
-├── main.dart                   # Entry point
-├── firebase_options.dart      # Firebase configuration
+├── main.dart                    # Entry point
+├── app.dart                     # Main app widget
+├── firebase_options.dart        # Firebase configuration (optional)
 │
-├── core/                       # Core functionality
-│   ├── models/                 # Data models
+├── core/                        # Core functionality
+│   ├── models/                  # Data models (10 files)
 │   │   ├── task_model.dart
 │   │   ├── project_model.dart
 │   │   ├── subtask_model.dart
@@ -110,10 +125,10 @@ lib/
 │   │   ├── folder_model.dart
 │   │   └── user_model.dart
 │   │
-│   ├── constants/              # App constants
+│   ├── constants/               # App constants
 │   │   └── app_constants.dart
 │   │
-│   ├── repositories/           # Data repositories
+│   ├── repositories/            # Data repositories (6 files)
 │   │   ├── base_repository.dart
 │   │   ├── task_repository.dart
 │   │   ├── project_repository.dart
@@ -121,55 +136,58 @@ lib/
 │   │   ├── category_repository.dart
 │   │   └── folder_repository.dart
 │   │
-│   ├── services/               # Core services
+│   ├── services/                # Core services (9 files)
+│   │   ├── database_service.dart        # Abstract database layer
+│   │   ├── mock_database_service.dart   # Offline mock database
+│   │   ├── supabase_service.dart        # Supabase integration
 │   │   ├── sync_service.dart
 │   │   ├── encryption_service.dart
 │   │   ├── voice_service.dart
 │   │   ├── notification_service.dart
 │   │   ├── haptic_service.dart
-│   │   ├── analytics_service.dart
-│   │   └── ai_service.dart
+│   │   └── analytics_service.dart
 │   │
-│   └── theme/                  # App theming
+│   └── theme/                   # App theming
 │       └── app_theme.dart
 │
-├── features/                   # Feature modules
-│   ├── tasks/                  # Task management
-│   │   ├── models/
-│   │   ├── services/
+├── features/                    # Feature modules
+│   ├── tasks/                   # Task management
 │   │   ├── providers/
+│   │   │   └── task_provider.dart
+│   │   └── screens/
+│   │       └── task_list_screen.dart
+│   │
+│   ├── projects/                # Project management
+│   │   ├── providers/
+│   │   │   └── project_provider.dart
 │   │   ├── screens/
+│   │   │   └── project_list_screen.dart
 │   │   └── widgets/
+│   │       └── project_card.dart
 │   │
-│   ├── projects/               # Project management
-│   │   ├── models/
-│   │   ├── services/
+│   ├── calendar/                # Calendar view
+│   │   └── screens/
+│   │       └── calendar_screen.dart
+│   │
+│   ├── board/                   # Board view (Kanban)
+│   │   └── screens/
+│   │       └── board_screen.dart
+│   │
+│   ├── auth/                    # Authentication
 │   │   ├── providers/
-│   │   ├── screens/
-│   │   └── widgets/
+│   │   │   └── auth_provider.dart
+│   │   └── screens/
+│   │       ├── splash_screen.dart
+│   │       └── login_screen.dart
 │   │
-│   ├── calendar/               # Calendar view
-│   │   ├── screens/
-│   │   ├── providers/
-│   │   └── widgets/
-│   │
-│   ├── board/                  # Board view
-│   │   ├── screens/
-│   │   ├── providers/
-│   │   └── widgets/
-│   │
-│   ├── auth/                   # Authentication
-│   │   ├── screens/
-│   │   ├── providers/
-│   │   └── services/
-│   │
-│   └── settings/               # App settings
-│       ├── screens/
+│   └── settings/                # App settings
 │       ├── providers/
-│       └── widgets/
+│       │   └── settings_provider.dart
+│       └── screens/
+│           └── settings_screen.dart
 │
-└── shared/                    # Shared components
-    ├── widgets/               # Reusable widgets
+└── shared/                     # Shared components
+    ├── widgets/                # Reusable widgets (16 files)
     │   ├── app_text_field.dart
     │   ├── app_button.dart
     │   ├── task_card.dart
@@ -184,84 +202,154 @@ lib/
     │   ├── color_picker_dialog.dart
     │   └── empty_state.dart
     │
-    ├── utils/                 # Utility functions
+    ├── utils/                  # Utility functions
     │   └── app_helpers.dart
     │
     └── animations/            # Custom animations
         └── transitions.dart
 ```
 
-## Configuration
+---
 
-### Firebase Setup
-1. Create a Firebase project at [Firebase Console](https://console.firebase.google.com/)
-2. Add Android, iOS, and Web apps to your project
-3. Download the configuration files and update `firebase_options.dart`
-4. Enable the following services:
-   - Firebase Authentication
-   - Cloud Firestore
-   - Firebase Storage
-   - Firebase Cloud Messaging (optional for push notifications)
+## 🎯 Getting Started with Firebase
 
-### Hive Setup
-The app uses Hive for local storage. Adapters are automatically generated for models with freezed.
+### 1. Create Firebase Project
+- Go to [Firebase Console](https://console.firebase.google.com/)
+- Click "Add project" and follow the steps
 
-### Environment Variables
+### 2. Add Apps to Firebase
+- Add Android, iOS, and Web apps to your project
+- Download configuration files
+
+### 3. Enable Services
+- Firebase Authentication
+- Cloud Firestore (Database)
+- Firebase Storage
+
+### 4. Update Configuration
+- Update `lib/firebase_options.dart` with your Firebase config
+- Or use FlutterFire CLI:
+  ```bash
+  dart pub global activate flutterfire_cli
+  flutterfire configure
+  ```
+
+---
+
+## 🎯 Getting Started with Supabase
+
+### 1. Create Supabase Project
+- Go to [Supabase](https://supabase.com/)
+- Create a new project
+
+### 2. Get Credentials
+- Find your Supabase URL and anon key in Project Settings > API
+
+### 3. Update Configuration
+In `main.dart`:
+```dart
+await SupabaseService.initialize(
+  url: 'YOUR_SUPABASE_URL',
+  anonKey: 'YOUR_SUPABASE_ANON_KEY',
+);
+```
+
+---
+
+## 🔧 Configuration
+
+### Environment Variables (Optional)
 Create a `.env` file for development:
 ```env
+# Firebase
 FIREBASE_API_KEY=your_api_key
 FIREBASE_APP_ID=your_app_id
 FIREBASE_PROJECT_ID=your_project_id
+
+# Supabase
+SUPABASE_URL=your_supabase_url
+SUPABASE_ANON_KEY=your_anon_key
 ```
 
-## Usage
+### Database Collections/Tables
+The app uses the following data structures:
+- `users` - User accounts and profiles
+- `tasks` - Individual tasks
+- `projects` - Task groups/projects
+- `tags` - Task tags
+- `categories` - Task categories
+- `folders` - Folder structures
+- `reminders` - Task reminders
+- `subtasks` - Task subtasks
 
-### Creating a Task
-```dart
-final task = Task.create(
-  title: 'Complete project',
-  description: 'Finish the Flutter project by Friday',
-  projectId: 'project_123',
-  priority: 3, // High priority
-  dueDate: DateTime.now().add(Duration(days: 2)),
-);
+---
 
-// Add to repository
-final taskRepo = ref.read(taskRepositoryProvider(userId));
-await taskRepo.create(task);
+## 🛠️ Architecture
+
+### State Management
+- **Riverpod** for reactive state management
+- **Provider** pattern for dependency injection
+- **StateNotifier** for complex state logic
+
+### Data Layer
+- **Repository Pattern** for data access
+- **Offline-First** with Hive for local storage
+- **Automatic Sync** with Firebase/Supabase
+
+### Services
+- **Authentication**: Firebase Auth / Supabase Auth
+- **Database**: Firestore / Supabase Realtime
+- **Storage**: Firebase Storage / Supabase Storage
+- **Notifications**: Local notifications for reminders
+- **Voice**: Speech-to-text for task creation
+- **Analytics**: Track productivity patterns
+- **Encryption**: AES-256 for data security
+- **Haptics**: Device vibration feedback
+
+---
+
+## 📱 Running the App
+
+### Android
+```bash
+flutter run -d android
 ```
 
-### Querying Tasks
-```dart
-// Get all tasks
-final tasks = await taskRepo.getAll();
-
-// Get tasks by project
-final projectTasks = await taskRepo.getTasksByProject(projectId);
-
-// Get today's tasks
-final todayTasks = await taskRepo.getTodayTasks();
+### iOS
+```bash
+flutter run -d ios
 ```
 
-### Real-time Updates
-The app automatically syncs data between local storage and Firebase. Changes made offline will sync when connection is restored.
+### Web
+```bash
+flutter run -d chrome
+```
 
-## Customization
+### Desktop
+```bash
+flutter run -d windows
+flutter run -d macos
+flutter run -d linux
+```
 
-### Theming
-The app supports Material You dynamic colors. Customize the theme in `lib/core/theme/app_theme.dart`.
+---
 
-### Colors
-Projects, tags, and folders can be customized with any color. Use the `ColorPickerDialog` widget for color selection.
-
-## Testing
+## 🧪 Testing
 
 Run tests with:
 ```bash
 flutter test
 ```
 
-## Deployment
+Run specific test files:
+```bash
+flutter test test/widget_tests/
+flutter test test/unit_tests/
+```
+
+---
+
+## 📦 Building for Release
 
 ### Android
 ```bash
@@ -279,24 +367,80 @@ flutter build ios
 flutter build web
 ```
 
-## Contributing
+### Desktop
+```bash
+flutter build windows
+flutter build macos
+flutter build linux
+```
+
+---
+
+## 🤝 Contributing
 
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
 3. Make your changes
-4. Run tests
-5. Submit a pull request
+4. Run tests (`flutter test`)
+5. Commit your changes (`git commit -m 'Add amazing feature'`)
+6. Push to the branch (`git push origin feature/amazing-feature`)
+7. Open a Pull Request
 
-## License
+---
 
-MIT License - see LICENSE file for details.
+## 📜 License
 
-## Acknowledgments
+This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) file for details.
 
-- Flutter team for the amazing framework
-- Firebase team for the powerful backend services
+---
+
+## 🙏 Acknowledgments
+
+- [Flutter](https://flutter.dev/) - The amazing cross-platform framework
+- [Firebase](https://firebase.google.com/) - Powerful backend services
+- [Supabase](https://supabase.com/) - Open-source Firebase alternative
+- [Riverpod](https://riverpod.dev/) - State management solution
 - All contributors and open-source projects used in this app
 
-## Support
+---
 
-For issues, questions, or feature requests, please open an issue on GitHub.
+## 🆘 Support
+
+For issues, questions, or feature requests:
+
+1. **GitHub Issues**: Open an issue on [GitHub](https://github.com/itsarshadahmad/Task-App/issues)
+2. **Discussions**: Join the discussion at [GitHub Discussions](https://github.com/itsarshadahmad/Task-App/discussions)
+3. **Email**: Contact the maintainer
+
+---
+
+## 📞 Contact
+
+- **GitHub**: [itsarshadahmad](https://github.com/itsarshadahmad)
+- **Repository**: [Task-App](https://github.com/itsarshadahmad/Task-App)
+
+---
+
+## 🎯 Roadmap
+
+### Upcoming Features
+- [ ] Multi-language support (i18n)
+- [ ] Advanced analytics dashboard
+- [ ] Team collaboration features
+- [ ] Calendar sync with Google Calendar
+- [ ] Task templates
+- [ ] Recurring task patterns
+- [ ] Export/Import data
+- [ ] Backup and restore
+
+### Planned Improvements
+- [ ] Performance optimization
+- [ ] Accessibility improvements
+- [ ] More customization options
+- [ ] Integration with more services
+
+---
+
+<p align="center">
+  Made with ❤️ using Flutter
+</p>
