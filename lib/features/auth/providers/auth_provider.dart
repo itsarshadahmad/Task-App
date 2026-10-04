@@ -1,8 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
 import '../../../core/models/user_model.dart';
-import '../../../core/services/encryption_service.dart';
+import '../../../core/services/mock_database_service.dart';
 
 class AuthState {
   final UserModel? user;
@@ -33,34 +32,28 @@ class AuthState {
 }
 
 class AuthNotifier extends StateNotifier<AuthState> {
-  final firebase_auth.FirebaseAuth _auth = firebase_auth.FirebaseAuth.instance;
   final ProviderRef ref;
+  final MockDatabaseService _mockDb;
 
-  AuthNotifier({required this.ref}) : super(const AuthState()) {
-    _auth.authStateChanges().listen((user) {
-      if (user != null) {
-        _loadUser(user);
-      } else {
-        state = state.copyWith(
-          user: null,
-          isAuthenticated: false,
-        );
-      }
-    });
+  AuthNotifier({required this.ref}) : 
+    _mockDb = ref.read(mockDatabaseServiceProvider),
+    super(const AuthState()) {
+    // In mock mode, we're always authenticated with a mock user
+    _loadMockUser();
   }
 
-  Future<void> _loadUser(firebase_auth.User user) async {
+  Future<void> _loadMockUser() async {
     try {
-      // Load user from Firestore
-      // For now, create a basic user model
+      // Create a mock user
       final userModel = UserModel(
-        id: user.uid,
-        email: user.email ?? '',
-        displayName: user.displayName,
-        photoUrl: user.photoURL,
-        phoneNumber: user.phoneNumber,
-        createdAt: user.metadata.creationTime,
-        updatedAt: user.metadata.lastSignInTime,
+        id: _mockDb.currentUserId ?? 'mock_user_id',
+        email: 'user@example.com',
+        displayName: 'Test User',
+        photoUrl: null,
+        phoneNumber: null,
+        createdAt: DateTime.now(),
+        updatedAt: DateTime.now(),
+        role: 'user',
       );
       
       state = state.copyWith(
@@ -80,10 +73,9 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
+      // In mock mode, just set a user
+      await _mockDb.signInWithEmail(email, password);
+      await _loadMockUser();
     } catch (e) {
       state = state.copyWith(
         error: 'Sign in failed: $e',
@@ -97,16 +89,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      final userCredential = await _auth.createUserWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-      
-      // Update display name
-      await userCredential.user?.updateDisplayName(name);
-      
-      // Create user in Firestore
-      // Will be handled by Firestore triggers or separate call
+      await _mockDb.signUpWithEmail(email, password);
+      await _loadMockUser();
     } catch (e) {
       state = state.copyWith(
         error: 'Sign up failed: $e',
@@ -120,16 +104,8 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true, error: null);
     
     try {
-      // Google sign in implementation
-      // final googleUser = await GoogleSignIn().signIn();
-      // final googleAuth = await googleUser?.authentication;
-      // final credential = firebase_auth.GoogleAuthProvider.credential(
-      //   accessToken: googleAuth?.accessToken,
-      //   idToken: googleAuth?.idToken,
-      // );
-      // await _auth.signInWithCredential(credential);
-      
-      throw Exception('Google sign in not implemented yet');
+      // In mock mode, just load mock user
+      await _loadMockUser();
     } catch (e) {
       state = state.copyWith(
         error: 'Google sign in failed: $e',
@@ -143,7 +119,7 @@ class AuthNotifier extends StateNotifier<AuthState> {
     state = state.copyWith(isLoading: true);
     
     try {
-      await _auth.signOut();
+      await _mockDb.signOut();
       state = state.copyWith(
         user: null,
         isAuthenticated: false,

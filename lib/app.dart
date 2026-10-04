@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import 'core/theme/app_theme.dart';
+import 'core/services/mock_database_service.dart';
 import 'features/auth/providers/auth_provider.dart';
 import 'features/auth/screens/login_screen.dart';
 import 'features/auth/screens/splash_screen.dart';
@@ -25,6 +26,9 @@ class TaskApp extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    // Initialize mock database service
+    final mockDb = ref.read(mockDatabaseServiceProvider);
+    
     final router = GoRouter(
       initialLocation: '/splash',
       routes: [
@@ -67,14 +71,17 @@ class TaskApp extends ConsumerWidget {
         ),
       ],
       redirect: (context, state) {
-        final isLoggedIn = ref.read(authProvider).isAuthenticated;
+        // For mock mode, always allow access to main app
+        // In production with real auth, use:
+        // final isLoggedIn = ref.read(authProvider).isAuthenticated;
         final isSplash = state.location == '/splash';
         
-        if (!isLoggedIn && !isSplash) {
-          return '/login';
+        // Skip login for now in mock mode
+        if (!isSplash && state.location == '/login') {
+          return '/';
         }
         
-        if (isLoggedIn && state.location == '/login') {
+        if (state.location == '/splash') {
           return '/';
         }
         

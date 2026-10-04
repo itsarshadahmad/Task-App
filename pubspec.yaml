@@ -19,11 +19,14 @@ dependencies:
   hive_flutter: ^1.1.0
   path_provider: ^2.1.1
 
-  # Firebase for cloud sync
-  firebase_core: ^2.24.2
-  firebase_auth: ^4.16.0
-  cloud_firestore: ^4.14.0
-  firebase_storage: ^11.6.0
+  # Optional: Firebase for cloud sync (uncomment when needed)
+  # firebase_core: ^2.24.2
+  # firebase_auth: ^4.16.0
+  # cloud_firestore: ^4.14.0
+  # firebase_storage: ^11.6.0
+  
+  # Optional: Supabase for cloud sync (uncomment when needed)
+  # supabase_flutter: ^2.0.0
 
   # UI Components
   flutter_staggered_animations: ^3.0.1
@@ -100,6 +103,9 @@ dependencies:
 
   # Rate limiting
   throttle: ^2.0.0
+  
+  # UUID for generating unique IDs
+  uuid: ^4.3.1
 
 dev_dependencies:
   flutter_test:
